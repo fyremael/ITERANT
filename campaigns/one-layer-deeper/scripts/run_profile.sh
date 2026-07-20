@@ -14,7 +14,7 @@ output="$root/artifacts/runs/${profile}-${tier}-${dataset}-s${seed}.json"
 
 if [[ "$profile" == "official_baseline" ]]; then
   ONE_LAYER_EVALUATOR_ROOT="$evaluator" \
-    "$root/scripts/materialize_official_baseline.sh" "$submission"
+    bash "$root/scripts/materialize_official_baseline.sh" "$submission"
 else
   profile_json="$root/profiles/$profile.json"
   old-campaign generate \
