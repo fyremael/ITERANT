@@ -1,0 +1,14 @@
+{
+  "phase": "p1-reproduction",
+  "upstream_commit": "885fb4c95fc00f39b5038f07169e79bc3b285d72",
+  "official_faithful": [
+    {"profile":"baseline_adamw","tier":"easy","dataset":"e1","seed":74},
+    {"profile":"baseline_adamw","tier":"medium","dataset":"m1","seed":74},
+    {"profile":"baseline_adamw","tier":"medium","dataset":"m5","seed":74}
+  ],
+  "resource_adapted_seed_sweep": {
+    "seeds": [11,22,33],
+    "datasets": ["e1","m1","m5"],
+    "admissible_for_hard_gate": false
+  }
+}

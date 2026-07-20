@@ -1,0 +1,10 @@
+{
+  "upstream_commit": "885fb4c95fc00f39b5038f07169e79bc3b285d72",
+  "required_datasets": ["m1", "m2", "m3", "m4", "m5"],
+  "minimum_seeds_per_dataset": 3,
+  "minimum_absolute_gain": 0.0025,
+  "minimum_throughput_ratio": 0.65,
+  "maximum_heldout_depth_gap": 0.20,
+  "maximum_peak_memory_gib": 72.0,
+  "maximum_state_norm_p99": 20.0
+}

@@ -1,0 +1,18 @@
+{
+  "architecture": "baseline",
+  "optimizer": "adamw",
+  "d_model": 128,
+  "num_heads": 4,
+  "train_loops_min": 1,
+  "train_loops_max": 1,
+  "eval_loops": 1,
+  "batch_size": 512,
+  "max_steps": 1000000,
+  "learning_rate": 0.001,
+  "weight_decay": 0.1,
+  "warmup_fraction": 0.02,
+  "stability_gates": false,
+  "normalize_state": false,
+  "loop_consistency_weight": 0.0,
+  "muon_ns_steps": 3
+}

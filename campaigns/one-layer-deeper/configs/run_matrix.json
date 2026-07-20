@@ -1,0 +1,51 @@
+{
+  "upstream_commit": "885fb4c95fc00f39b5038f07169e79bc3b285d72",
+  "phases": [
+    {
+      "id": "p1-reproduction",
+      "purpose": "Reproduce the official AdamW baseline and measure H100 throughput, memory, and score variance.",
+      "runs": [
+        {"profile": "baseline_adamw", "tier": "easy", "dataset": "e1", "seed": 74},
+        {"profile": "baseline_adamw", "tier": "medium", "dataset": "m1", "seed": 74},
+        {"profile": "baseline_adamw", "tier": "medium", "dataset": "m5", "seed": 74}
+      ]
+    },
+    {
+      "id": "p2-recurrence",
+      "purpose": "Compare recurrent cores under matched wall-clock budgets.",
+      "runs": [
+        {"profile": "tied_transformer_adamw", "tier": "easy", "dataset": "e1", "seed": 74},
+        {"profile": "neural_tape_adamw", "tier": "easy", "dataset": "e1", "seed": 74},
+        {"profile": "tied_transformer_adamw", "tier": "medium", "dataset": "m5", "seed": 74},
+        {"profile": "neural_tape_adamw", "tier": "medium", "dataset": "m5", "seed": 74}
+      ]
+    },
+    {
+      "id": "p3-extrapolation",
+      "purpose": "Test stochastic training unrolls and evaluation-time over-unrolling.",
+      "runs": [
+        {"profile": "tied_transformer_extrapolation", "tier": "medium", "dataset": "m1", "seed": 74},
+        {"profile": "tied_transformer_extrapolation", "tier": "medium", "dataset": "m2", "seed": 74},
+        {"profile": "tied_transformer_extrapolation", "tier": "medium", "dataset": "m5", "seed": 74}
+      ]
+    },
+    {
+      "id": "p4-stability",
+      "purpose": "Measure the lowest-cost RUNT/SPINDLE stability interventions.",
+      "runs": [
+        {"profile": "tied_transformer_stable", "tier": "medium", "dataset": "m1", "seed": 74},
+        {"profile": "tied_transformer_stable", "tier": "medium", "dataset": "m2", "seed": 74},
+        {"profile": "tied_transformer_stable", "tier": "medium", "dataset": "m5", "seed": 74}
+      ]
+    },
+    {
+      "id": "p5-optimizer",
+      "purpose": "Compare AdamW, hybrid Muon, and groupwise adaptive betas at fixed architecture.",
+      "runs": [
+        {"profile": "tied_transformer_stable", "tier": "medium", "dataset": "m5", "seed": 74},
+        {"profile": "tied_transformer_muon", "tier": "medium", "dataset": "m5", "seed": 74},
+        {"profile": "tied_transformer_groupwise", "tier": "medium", "dataset": "m5", "seed": 74}
+      ]
+    }
+  ]
+}
