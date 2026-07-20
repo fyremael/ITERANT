@@ -1,0 +1,27 @@
+work_package: OLD-WP-001
+artifact: campaigns/one-layer-deeper
+status: specification
+reviews:
+  - office: Axiomatist
+    obligation: State the benchmark contract, hidden-task uncertainty, and non-exploit boundary.
+    status: required
+  - office: Cartographer
+    obligation: Maintain the phase dependency graph and run lineage.
+    status: required
+  - office: Verifier
+    obligation: Verify generated submissions, evaluator pin, optimizer coverage, and reproducibility.
+    status: required
+  - office: Adversary
+    obligation: Seek public-tier overfitting, unstable recurrence, metric leakage, and throughput confounds.
+    status: required
+  - office: Steward
+    obligation: Control H100 and hosted-attempt expenditure.
+    status: required
+  - office: Amanuensis
+    obligation: Preserve run manifests, environment snapshots, decisions, and supersession records.
+    status: required
+  - office: Referee
+    obligation: Apply the Hard gate without discretionary threshold changes after observing results.
+    status: required
+human_steward:
+  required_action: Authorize each hosted Hard submission after the machine gate passes.

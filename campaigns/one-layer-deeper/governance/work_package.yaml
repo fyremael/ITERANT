@@ -1,0 +1,27 @@
+id: OLD-WP-001
+title: GCL One Layer Deeper Campaign
+purpose: Determine whether governed recurrent operator models can outperform the official baseline under the competition wall-clock contract.
+scope:
+  included:
+    - official baseline reproduction
+    - tied recurrent Transformer
+    - recurrent neural tape
+    - stochastic unroll curricula
+    - low-cost stability controls
+    - AdamW, hybrid Muon, and groupwise adaptive betas
+    - public-tier evidence and Hard-submission governance
+  excluded:
+    - task-specific modular-arithmetic solvers
+    - data inspection outside the evaluator contract
+    - metric exploitation
+    - ungoverned daily Hard attempts
+acceptance_criteria:
+  - Every generated submission validates as one UTF-8 file below 256 KiB.
+  - H100 evidence is pinned to the governed upstream commit.
+  - Recurrent candidates are compared at matched wall-clock budgets.
+  - Held-out-depth, throughput, memory, and dynamical evidence are recorded.
+  - The Hard gate fails closed when evidence is missing or non-finite.
+reversal_conditions:
+  - Upstream rules or evaluator semantics materially change.
+  - Public-task improvements fail to transfer across M1-M5.
+  - Recurrent depth costs erase score gains under matched time.

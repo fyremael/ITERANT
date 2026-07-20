@@ -1,0 +1,56 @@
+name: One Layer Deeper campaign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "campaigns/one-layer-deeper/**"
+      - ".github/workflows/one-layer-deeper.yml"
+  pull_request:
+    paths:
+      - "campaigns/one-layer-deeper/**"
+      - ".github/workflows/one-layer-deeper.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.5"
+      - uses: astral-sh/setup-uv@v6
+      - name: Clone governed evaluator
+        run: |
+          source campaigns/one-layer-deeper/UPSTREAM_PIN.env
+          git clone "$ONE_LAYER_REPOSITORY" /tmp/one-layer-deeper
+          git -C /tmp/one-layer-deeper checkout --detach "$ONE_LAYER_COMMIT"
+          test "$(git -C /tmp/one-layer-deeper rev-parse HEAD)" = "$ONE_LAYER_COMMIT"
+      - name: Install pinned evaluator
+        run: uv sync --locked --project /tmp/one-layer-deeper
+      - name: Run campaign contract tests in pinned Torch environment
+        env:
+          PYTHONPATH: ${{ github.workspace }}/campaigns/one-layer-deeper/src
+        run: |
+          uv run --project /tmp/one-layer-deeper \
+            python -m unittest discover -s campaigns/one-layer-deeper/tests -v
+      - name: Generate and validate official baseline
+        env:
+          PYTHONPATH: ${{ github.workspace }}/campaigns/one-layer-deeper/src
+        run: |
+          uv run --project /tmp/one-layer-deeper python -m old_campaign.cli generate \
+            --profile campaigns/one-layer-deeper/profiles/baseline_adamw.json \
+            --template campaigns/one-layer-deeper/templates/submission.py.tmpl \
+            --output /tmp/submission.py
+          uv run --project /tmp/one-layer-deeper one-layer validate /tmp/submission.py
+      - name: Run pinned CPU smoke evaluation
+        working-directory: /tmp/one-layer-deeper
+        run: |
+          uv run python -m benchmark.runner \
+            --manifest benchmark/manifests/smoke_cpu.json \
+            --submission-file /tmp/submission.py \
+            --include-structured-metrics

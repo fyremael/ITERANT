@@ -1,0 +1,18 @@
+{
+  "architecture": "tied_transformer",
+  "optimizer": "hybrid_muon",
+  "d_model": 192,
+  "num_heads": 6,
+  "train_loops_min": 2,
+  "train_loops_max": 8,
+  "eval_loops": 12,
+  "batch_size": 512,
+  "max_steps": 1000000,
+  "learning_rate": 0.0008,
+  "weight_decay": 0.08,
+  "warmup_fraction": 0.03,
+  "stability_gates": true,
+  "normalize_state": true,
+  "loop_consistency_weight": 0.001,
+  "muon_ns_steps": 3
+}

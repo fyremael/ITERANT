@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.upstream/
+artifacts/runs/
+artifacts/submissions/
+artifacts/evidence/
+artifacts/manifests/
