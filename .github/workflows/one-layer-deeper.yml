@@ -38,19 +38,32 @@ jobs:
         run: |
           uv run --project /tmp/one-layer-deeper \
             python -m unittest discover -s campaigns/one-layer-deeper/tests -v
-      - name: Generate and validate official baseline
+      - name: Materialize and validate byte-identical official baseline
+        env:
+          ONE_LAYER_EVALUATOR_ROOT: /tmp/one-layer-deeper
+        run: |
+          bash campaigns/one-layer-deeper/scripts/materialize_official_baseline.sh \
+            /tmp/official/submission.py
+          expected=$(git -C /tmp/one-layer-deeper rev-parse \
+            HEAD:submissions/baseline_adamw/submission.py)
+          actual=$(git hash-object /tmp/official/submission.py)
+          test "$actual" = "$expected"
+          uv run --project /tmp/one-layer-deeper \
+            one-layer validate /tmp/official/submission.py
+      - name: Generate and validate implementation-equivalence candidate
         env:
           PYTHONPATH: ${{ github.workspace }}/campaigns/one-layer-deeper/src
         run: |
           uv run --project /tmp/one-layer-deeper python -m old_campaign.cli generate \
             --profile campaigns/one-layer-deeper/profiles/baseline_adamw.json \
             --template campaigns/one-layer-deeper/templates/submission.py.tmpl \
-            --output /tmp/submission.py
-          uv run --project /tmp/one-layer-deeper one-layer validate /tmp/submission.py
-      - name: Run pinned CPU smoke evaluation
+            --output /tmp/generated/submission.py
+          uv run --project /tmp/one-layer-deeper \
+            one-layer validate /tmp/generated/submission.py
+      - name: Run pinned CPU smoke evaluation with official baseline
         working-directory: /tmp/one-layer-deeper
         run: |
           uv run python -m benchmark.runner \
             --manifest benchmark/manifests/smoke_cpu.json \
-            --submission-file /tmp/submission.py \
+            --submission-file /tmp/official/submission.py \
             --include-structured-metrics
