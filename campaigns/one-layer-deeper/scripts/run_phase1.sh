@@ -10,6 +10,6 @@ if [[ ${#gpu_names[@]} -ne 1 ]] || [[ "${gpu_names[0]}" != *H100* ]]; then
   printf 'Phase 1 requires exactly one visible H100; found: %s\n' "${gpu_names[*]:-none}" >&2
   exit 3
 fi
-"$root/scripts/run_profile.sh" baseline_adamw easy e1 74
-"$root/scripts/run_profile.sh" baseline_adamw medium m1 74
-"$root/scripts/run_profile.sh" baseline_adamw medium m5 74
+"$root/scripts/run_profile.sh" official_baseline easy e1 74
+"$root/scripts/run_profile.sh" official_baseline medium m1 74
+"$root/scripts/run_profile.sh" official_baseline medium m5 74
