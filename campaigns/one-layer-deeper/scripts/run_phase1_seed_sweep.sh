@@ -7,7 +7,7 @@ evaluator=${ONE_LAYER_EVALUATOR_ROOT:-"$root/.upstream/one-layer-deeper"}
 seeds=(11 22 33)
 submission="$root/artifacts/submissions/official_baseline/submission.py"
 ONE_LAYER_EVALUATOR_ROOT="$evaluator" \
-  "$root/scripts/materialize_official_baseline.sh" "$submission"
+  bash "$root/scripts/materialize_official_baseline.sh" "$submission"
 
 for item in "easy:e1" "medium:m1" "medium:m5"; do
   tier=${item%%:*}
