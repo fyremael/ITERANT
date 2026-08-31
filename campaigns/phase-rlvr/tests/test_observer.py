@@ -65,5 +65,63 @@ class ObserverTests(unittest.TestCase):
                 summarize_step(read_validation_jsonl(path), k=4)
 
 
+class O10ManifestTests(unittest.TestCase):
+    def _load_validator(self):
+        import importlib.util
+
+        path = Path(__file__).parents[1] / "scripts" / "check_o10_manifest.py"
+        spec = importlib.util.spec_from_file_location("check_o10_manifest", path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        return module
+
+    def _valid(self):
+        return {
+            "run_id": "o10-smoke",
+            "iterant_head": "a" * 40,
+            "verl_commit": "7aed6b230776f963fa09509c10d9c3a767d1102c",
+            "model_id": "example/model",
+            "model_revision": "rev",
+            "tokenizer_id": "example/model",
+            "tokenizer_revision": "rev",
+            "train_dataset": "train",
+            "train_dataset_revision": "rev",
+            "validation_dataset": "val",
+            "validation_dataset_revision": "rev",
+            "verifier_hash": "b" * 64,
+            "seed_training": 1,
+            "seed_sampling": 2,
+            "seed_data": 3,
+            "hardware": "gpu",
+            "cuda": "version",
+            "torch": "version",
+            "rollout_backend": "vllm",
+            "precision_policy": "bf16",
+            "fixed_recipe_hash": "c" * 64,
+            "validation_data_dir": "/run/validation",
+            "rollout_data_dir": "/run/rollouts",
+            "controller_mutation_enabled": False,
+        }
+
+    def test_o10_manifest_accepts_governed_pin_and_no_mutation(self):
+        module = self._load_validator()
+        module.validate_manifest(self._valid())
+
+    def test_o10_manifest_rejects_controller_mutation(self):
+        module = self._load_validator()
+        payload = self._valid()
+        payload["controller_mutation_enabled"] = True
+        with self.assertRaises(ValueError):
+            module.validate_manifest(payload)
+
+    def test_o10_manifest_rejects_upstream_drift(self):
+        module = self._load_validator()
+        payload = self._valid()
+        payload["verl_commit"] = "deadbeef"
+        with self.assertRaises(ValueError):
+            module.validate_manifest(payload)
+
+
 if __name__ == "__main__":
     unittest.main()
