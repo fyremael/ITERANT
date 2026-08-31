@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "recipes": {
+    "discovery": {
+      "alpha": 0.25,
+      "rollout_n": 16,
+      "passk_reward_k": 4,
+      "context_multiplier": 1.25,
+      "lr_multiplier": 1.0,
+      "kl_loss_coef_multiplier": 1.0,
+      "curriculum": "frontier"
+    },
+    "sharpening": {
+      "alpha": 1.0,
+      "rollout_n": 8,
+      "passk_reward_k": 1,
+      "context_multiplier": 0.8,
+      "lr_multiplier": 0.9,
+      "kl_loss_coef_multiplier": 1.0,
+      "curriculum": "consolidate"
+    },
+    "recovery": {
+      "alpha": 1.0,
+      "rollout_n": 8,
+      "passk_reward_k": 1,
+      "context_multiplier": 1.0,
+      "lr_multiplier": 0.5,
+      "kl_loss_coef_multiplier": 2.0,
+      "curriculum": "hold",
+      "require_engine_resync": true
+    },
+    "rebalance": {
+      "alpha": 0.5,
+      "rollout_n": 16,
+      "passk_reward_k": 4,
+      "context_multiplier": 1.1,
+      "lr_multiplier": 0.75,
+      "kl_loss_coef_multiplier": 1.25,
+      "curriculum": "boundary_rebalance"
+    }
+  }
+}
