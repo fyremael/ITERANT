@@ -12,7 +12,9 @@ Status: **WP00_IMPLEMENTED__NOT_YET_RLVR_EVIDENCED**
 - continuous `alpha` length-normalization reference contract;
 - finite-sample Pass@K reference estimator;
 - synthetic unit tests for discovery, sharpening, stall, collapse, verifier failure, hysteresis, and metric contracts;
-- staged run matrix and explicit stop conditions.
+- staged run matrix and explicit stop conditions;
+- read-only veRL v0.8.0 validation-dump observer and exact upstream tag pin;
+- offline Pass@1/Pass@K/all-fail/correct-output-uniqueness summaries.
 
 ## Not yet evidenced
 
