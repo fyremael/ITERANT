@@ -1,0 +1,8 @@
+[project]
+name = "phase-rlvr"
+version = "0.0.1"
+description = "Governed regime detection and constrained scheduling for RLVR"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+package-dir = {"" = "src"}

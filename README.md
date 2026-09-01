@@ -15,18 +15,25 @@ run artifacts and diagnostics      <->   review and decision records
 candidate submissions              <->   Human Steward authorization
 ```
 
-## Active campaigns
+## Campaigns
+
+### PHASE-RLVR
+
+PHASE-RLVR studies whether RLVR training can be supervised by an operational regime detector that distinguishes discovery, sharpening, stall, collapse, and uncertainty from governed telemetry, then selects among a small audited set of training recipes. The campaign begins with a synthetic controller contract before any adaptive LLM training.
+
+See [`campaigns/phase-rlvr/README.md`](campaigns/phase-rlvr/README.md).
 
 ### One Layer Deeper
 
-The first campaign targets the Tilde Research / Core Automation architecture-and-optimizer competition. It includes the official-style AdamW baseline, tied recurrent Transformer and neural-tape cores, stochastic unroll curricula, low-cost RUNT/SPINDLE stability mechanisms, optimizer co-design, H100 profiling, and a fail-closed Hard-submission gate.
+The One Layer Deeper campaign targets learned recurrent computation for the Tilde Research / Core Automation architecture-and-optimizer setting. It includes the official-style AdamW baseline, tied recurrent Transformer and neural-tape cores, stochastic unroll curricula, low-cost RUNT/SPINDLE stability mechanisms, optimizer co-design, H100 profiling, and a fail-closed Hard-submission gate.
 
 See [`campaigns/one-layer-deeper/README.md`](campaigns/one-layer-deeper/README.md).
 
 ## Repository map
 
 ```text
-campaigns/one-layer-deeper/   competition implementation and evidence contract
+campaigns/phase-rlvr/         RLVR regime-control implementation and evidence contract
+campaigns/one-layer-deeper/   recurrent-depth implementation and evidence contract
 .github/workflows/             pinned evaluator and repository validation
 GOVERNANCE.md                  boundary between research execution and institutional authority
 ```
@@ -37,4 +44,4 @@ GOVERNANCE.md                  boundary between research execution and instituti
 make check
 ```
 
-Official H100 measurements require the pinned evaluator environment and exactly one visible H100. CPU validation establishes source and evaluator compatibility only; it is not performance evidence.
+Campaign contract tests establish source and control-logic correctness only. Performance, RLVR, or scientific claims require immutable run evidence under the relevant campaign acceptance contract.
