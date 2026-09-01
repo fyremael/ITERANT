@@ -104,13 +104,30 @@ def package_tar(output: Path, root: Path, members: list[Path]) -> None:
                 tf.add(path, arcname=path.relative_to(root))
 
 
-def main(argv: list[str] | None = None) -> int:
+def _parse_runtime_args(parser: argparse.ArgumentParser, argv: list[str] | None) -> argparse.Namespace:
+    if argv is not None:
+        return parser.parse_args(argv)
+    args, unknown = parser.parse_known_args()
+    if not unknown:
+        return args
+    if len(unknown) == 2 and unknown[0] == "-f":
+        kernel_file = Path(unknown[1])
+        if kernel_file.name.startswith("kernel-") and kernel_file.suffix == ".json":
+            return args
+    parser.error(f"unrecognized arguments: {' '.join(unknown)}")
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Execute exactly one governed O10-T4 segment")
     parser.add_argument("--root", type=Path, default=ROOT_DEFAULT)
     parser.add_argument("--source-archive", type=Path, default=SOURCE_ARCHIVE_DEFAULT)
     parser.add_argument("--manifest", type=Path, default=MANIFEST_DEFAULT)
     parser.add_argument("--resume-archive", type=Path, default=RESUME_ARCHIVE_DEFAULT)
-    args = parser.parse_args(argv)
+    return _parse_runtime_args(parser, argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
 
     root = args.root
     source_root = root / "source"
