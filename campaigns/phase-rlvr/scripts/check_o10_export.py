@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 import tarfile
 from pathlib import Path
 
@@ -25,6 +26,42 @@ def read_member_json(tf: tarfile.TarFile, name: str) -> dict:
     return json.loads(fileobj.read().decode("utf-8"))
 
 
+def read_member_text(tf: tarfile.TarFile, name: str) -> str:
+    member = tf.getmember(name)
+    fileobj = tf.extractfile(member)
+    if fileobj is None:
+        raise ValueError(f"missing readable archive member {name}")
+    return fileobj.read().decode("utf-8", errors="replace")
+
+
+def failure_diagnostics(evidence: Path, *, tail_lines: int = 160) -> str:
+    """Return bounded diagnostics from a failed remote segment packet."""
+    try:
+        with tarfile.open(evidence, "r:gz") as tf:
+            names = set(tf.getnames())
+            chunks: list[str] = []
+            if "segment_receipt.json" in names:
+                receipt = read_member_json(tf, "segment_receipt.json")
+                fatal = receipt.get("fatal_error")
+                if fatal:
+                    chunks.append(f"remote fatal_error: {fatal}")
+            train_logs = sorted(
+                name
+                for name in names
+                if name.startswith("logs/train-to-") and name.endswith(".log")
+            )
+            if train_logs:
+                name = train_logs[-1]
+                lines = read_member_text(tf, name).splitlines()
+                tail = "\n".join(lines[-tail_lines:])
+                chunks.append(f"--- {name} (last {min(len(lines), tail_lines)} lines) ---\n{tail}")
+            elif "segment_receipt.json" not in names:
+                chunks.append("failed evidence contains neither segment_receipt.json nor a training log")
+            return "\n".join(chunks)
+    except Exception as exc:
+        return f"unable to read failed-segment diagnostics: {type(exc).__name__}: {exc}"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Admit one downloaded O10-T4 Colab segment")
     parser.add_argument("--evidence", type=Path, required=True)
@@ -42,6 +79,9 @@ def main(argv: list[str] | None = None) -> int:
     if export.get("resume_sha256") != resume_sha:
         raise ValueError("resume archive digest mismatch")
     if export.get("segment_status") != "GREEN_OBSERVER":
+        diagnostics = failure_diagnostics(args.evidence)
+        if diagnostics:
+            print(diagnostics, file=sys.stderr)
         raise ValueError(f"segment is not admissible: {export.get('segment_status')}")
 
     with tarfile.open(args.evidence, "r:gz") as tf:
