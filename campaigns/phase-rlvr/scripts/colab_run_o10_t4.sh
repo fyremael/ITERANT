@@ -43,7 +43,7 @@ if [[ ${#ITERANT_HEAD} -ne 40 ]]; then
   exit 2
 fi
 
-STAMP="$(date -u +%Y%m%dT%H%M%SÂ)"
+STAMP="$(LC_ALL=C date -u +%Y%m%dT%H%M%SZ)"
 RUN_ID="${PHASE_RLVR_RUN_ID:-PHASE-RLVR-WP01-O10-T4-${STAMP}}"
 RUN_ROOT="$ROOT/runs/hosted/$RUN_ID"
 mkdir -p "$RUN_ROOT"
@@ -175,7 +175,7 @@ done
 colab log -s "$SESSION" -o "$RUN_ROOT/colab-execution.md" || true
 
 python - "$RUN_ROOT" "$ITERANT_HEAD" "$SOURCE_SHA256" <<'PY'
-import hashlib, json, pathlib, sys
+import json, pathlib, sys
 root=pathlib.Path(sys.argv[1])
 head=sys.argv[2]
 source_sha=sys.argv[3]
