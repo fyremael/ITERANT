@@ -108,6 +108,13 @@ class O10T4ContractTests(unittest.TestCase):
         proc = subprocess.run(["bash", "-n", str(script)], capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
 
+    def test_shell_runner_session_stamp_is_ascii(self):
+        script = ROOT / "scripts" / "colab_run_o10_t4.sh"
+        raw = script.read_bytes()
+        text = raw.decode("ascii")
+        self.assertIn('STAMP="$(LC_ALL=C date -u +%Y%m%dT%H%M%SZ)"', text)
+        self.assertIn('SESSION="gcl-phase-rlvr-o10-${STAMP,,}-$$"', text)
+
     def test_export_admission_accepts_green_segment(self):
         import hashlib
         import tarfile
