@@ -7,6 +7,7 @@ dist/
 .pytest_cache/
 .coverage
 .upstream/
+runs/hosted/
 artifacts/runs/
 artifacts/submissions/
 artifacts/evidence/
