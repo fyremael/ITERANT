@@ -11,6 +11,7 @@ from pathlib import Path
 VERL_REPOSITORY = "https://github.com/verl-project/verl.git"
 VERL_COMMIT = "7aed6b230776f963fa09509c10d9c3a767d1102c"
 VLLM_VERSION = "0.11.0"
+TRANSFERQUEUE_VERSION = "0.1.7"
 
 
 def run(cmd: list[str], *, cwd: Path | None = None) -> str:
@@ -89,6 +90,14 @@ def main(argv: list[str] | None = None) -> int:
         # but omit upstream FlashAttention because Turing/T4 is outside FA2 support.
         run([sys.executable, "-m", "pip", "install", f"vllm=={VLLM_VERSION}", "--extra-index-url", "https://download.pytorch.org/whl/cu128"])
         run([sys.executable, "-m", "pip", "install", "-e", ".[math]"], cwd=verl_dir)
+        # The pinned synchronous trainer (main_ppo_sync) calls tq.init() unconditionally.
+        # Pin the exact version required by verl/utils/transferqueue_utils.py at VERL_COMMIT.
+        run([sys.executable, "-m", "pip", "install", f"TransferQueue=={TRANSFERQUEUE_VERSION}"])
+        observed_transferqueue = package_version("TransferQueue")
+        if observed_transferqueue != TRANSFERQUEUE_VERSION:
+            raise RuntimeError(
+                f"TransferQueue version drift: expected {TRANSFERQUEUE_VERSION}, observed {observed_transferqueue}"
+            )
 
     receipt = {
         "status": "GREEN_BOOTSTRAP",
@@ -98,9 +107,10 @@ def main(argv: list[str] | None = None) -> int:
         "verl_repository": VERL_REPOSITORY,
         "verl_commit": observed,
         "vllm_governed_version": VLLM_VERSION,
+        "transferqueue_governed_version": TRANSFERQUEUE_VERSION,
         "packages": {
             name: package_version(name)
-            for name in ("torch", "vllm", "ray", "transformers", "datasets", "peft", "verl")
+            for name in ("torch", "vllm", "ray", "transformers", "datasets", "peft", "verl", "TransferQueue")
         },
     }
     receipt_path = args.root / "bootstrap_receipt.json"
