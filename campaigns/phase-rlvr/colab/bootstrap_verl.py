@@ -43,11 +43,28 @@ def package_version(name: str) -> str | None:
         return None
 
 
-def main(argv: list[str] | None = None) -> int:
+def _parse_runtime_args(parser: argparse.ArgumentParser, argv: list[str] | None) -> argparse.Namespace:
+    if argv is not None:
+        return parser.parse_args(argv)
+    args, unknown = parser.parse_known_args()
+    if not unknown:
+        return args
+    if len(unknown) == 2 and unknown[0] == "-f":
+        kernel_file = Path(unknown[1])
+        if kernel_file.name.startswith("kernel-") and kernel_file.suffix == ".json":
+            return args
+    parser.error(f"unrecognized arguments: {' '.join(unknown)}")
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Bootstrap governed veRL v0.8.0 on the O10-T4 Colab worker")
     parser.add_argument("--root", type=Path, default=Path("/content/o10"))
     parser.add_argument("--skip-install", action="store_true", help="Validate checkout/runtime without pip installation")
-    args = parser.parse_args(argv)
+    return _parse_runtime_args(parser, argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
 
     if sys.version_info < (3, 10):
         raise RuntimeError(f"veRL v0.8.0 requires Python >=3.10; observed {platform.python_version()}")
