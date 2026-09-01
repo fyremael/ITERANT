@@ -115,6 +115,11 @@ class O10T4ContractTests(unittest.TestCase):
         self.assertIn('STAMP="$(LC_ALL=C date -u +%Y%m%dT%H%M%SZ)"', text)
         self.assertIn('SESSION="gcl-phase-rlvr-o10-${STAMP,,}-$$"', text)
 
+    def test_hosted_evidence_directory_is_ignored(self):
+        gitignore = ROOT.parents[1] / ".gitignore"
+        entries = {line.strip() for line in gitignore.read_text(encoding="utf-8").splitlines()}
+        self.assertIn("runs/hosted/", entries)
+
     def test_export_admission_accepts_green_segment(self):
         import hashlib
         import tarfile
