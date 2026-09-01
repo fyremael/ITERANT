@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import os
 import subprocess
@@ -5,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).parents[1]
 SRC = ROOT / "src"
@@ -20,6 +22,16 @@ from phase_rlvr.o10_t4 import (
     segment_targets,
     validate_o10_t4_manifest,
 )
+
+
+def load_colab_module(filename: str):
+    path = ROOT / "colab" / filename
+    spec = importlib.util.spec_from_file_location(f"phase_rlvr_test_{path.stem}", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"unable to load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 class O10T4ContractTests(unittest.TestCase):
@@ -119,6 +131,26 @@ class O10T4ContractTests(unittest.TestCase):
         gitignore = ROOT.parents[1] / ".gitignore"
         entries = {line.strip() for line in gitignore.read_text(encoding="utf-8").splitlines()}
         self.assertIn("runs/hosted/", entries)
+
+    def test_colab_entrypoints_accept_only_ipykernel_file_injection(self):
+        kernel_argv = [
+            "colab_kernel_launcher.py",
+            "-f",
+            "/root/.local/share/jupyter/runtime/kernel-test.json",
+        ]
+        for filename in ("bootstrap_verl.py", "remote_o10.py"):
+            module = load_colab_module(filename)
+            with self.subTest(filename=filename, case="kernel"):
+                with mock.patch.object(sys, "argv", kernel_argv):
+                    args = module.parse_args()
+                self.assertEqual(args.root, Path("/content/o10"))
+            with self.subTest(filename=filename, case="unknown-runtime"):
+                with mock.patch.object(sys, "argv", ["colab_kernel_launcher.py", "--bogus"]):
+                    with self.assertRaises(SystemExit):
+                        module.parse_args()
+            with self.subTest(filename=filename, case="unknown-explicit"):
+                with self.assertRaises(SystemExit):
+                    module.parse_args(["--bogus"])
 
     def test_export_admission_accepts_green_segment(self):
         import hashlib
